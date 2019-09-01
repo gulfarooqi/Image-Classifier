@@ -1,0 +1,22 @@
+body {
+  color: #676767;   /*Space Grey*/
+  background-color: #EEEEEE;    /*Light Grey*/
+  text-align: center;
+}
+
+h1 {
+  font-size: 36px;
+  font-style: italic;
+}
+
+button {
+  color: white;
+  padding 15px 32px;
+  font-size: 16px;
+  background-color: #676767;
+}
+
+video {
+  margin: 0 auto;
+  border: 10px outset #ddd;
+}

@@ -1,12 +1,22 @@
 <html>
   <head>
+    <meta charset='UTF-8'/>
+    <title>GF Image Classifier</title>
     <!-- Load the latest version of TensorFlow.js -->
     <script src="https://unpkg.com/@tensorflow/tfjs"></script>
     <script src="https://unpkg.com/@tensorflow-models/mobilenet"></script>
+    <script src="https://unpkg.com/@tensorflow-models/knn-classifier"></script>
+    <link rel='stylesheet' href="styles.css"/>
   </head>
   <body>
-    <!-- Load index.js after the content of the page -->
+    <h1>Gulraiz Farooqi's Image Classifier</h1>
+    <!-- Load index.js after showing the content of the page -->
+    <div id="console"></div>
+    <video autoplay playsinline muted id="webcam" width="320" height="320"></video><br><br>
+    <button id="Happy">Add Happy Face</button><br><br>
+    <button id="Sad">Add Sad Face</button><br><br>
+    <button id="Asleep">Add Asleep</button><br><br>
+    <button id="NormalGulraiz">Add Normal Gulraiz</button>
     <script src="index.js"></script>
-    <video autoplay playsinline muted id="webcam" width ="224" height="224"></video>
 </body>
 </html>

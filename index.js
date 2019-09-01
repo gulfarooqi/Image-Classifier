@@ -1,46 +1,68 @@
+const webcamElement = document.getElementById('webcam');
 let net;
-const webcamElement = document.getElementByID('webcam');
+const classifier = knnClassifier.create('');
 
-// This is the 'app' function
 async function app() {
-    console.log('Loading mobilenet..')
+  console.log('Loading mobilenet..');
 
-    // Load the model.
-    net = await mobilenet.load();
-    console.log('Sucessfully loaded model');
+  // Load the model.
+  net = await mobilenet.load();
+  console.log('Sucessfully loaded model');
 
-    await setupWebcam();
-    while (true) {
-        const result = await net.classify(webcamElement);
-        
-        document.getElementById('console').innerText = '
-        prediction: ${result[0].className}\n
-        probability: ${result[0].probability}
-    ';
-    
-    // Give some breathing room by waiting for the next animation frame to fire.
-    await tf.nextFrame();
+  await setupWebcam();
+
+  // Reads an image from the webcam and associates it with a specific class
+  // index.
+  const addExample = classId => {
+    // Get the intermediate activation of MobileNet 'conv_preds' and pass that
+    // to the KNN classifier.
+    const activation = net.infer(webcamElement, 'conv_preds');
+
+    // Pass the intermediate activation to the classifier.
+    classifier.addExample(activation, classId);
+  };
+
+  // When clicking a button, add an example for that class.
+  document.getElementById('Happy').addEventListener('click', () => addExample(0));
+  document.getElementById('Sad').addEventListener('click', () => addExample(1));
+  document.getElementById('Asleep').addEventListener('click', () => addExample(2));
+  document.getElementById('NormalGulraiz').addEventListener('click', () => addExample(3));
+
+  while (true) {
+    if (classifier.getNumClasses() > 0) {
+      // Get the activation from mobilenet from the webcam.
+      const activation = net.infer(webcamElement, 'conv_preds');
+      // Get the most likely class and confidences from the classifier module.
+      const result = await classifier.predictClass(activation);
+
+      const classes = ['Happy', 'Sad', 'Asleep', 'NormalGulraiz'];
+      document.getElementById('console').innerText = `
+        prediction: ${classes[result.classIndex]}\n
+        probability: ${result.confidences[result.classIndex]}
+      `;
     }
+
+    await tf.nextFrame();
+  }
 }
 
-// This is the setup webcam function which will get media from user webcam
 async function setupWebcam() {
-    return new Promise((resolve,reject) => {
-        const navigatorAny = navigator;
-        navigator.getUserMedia = navigator.getUserMedia ||
-            navigatorAny.webkitGetUserMedia || navigatorAny.mozGetuserMedia ||
-            navigatorAny.msGetUserMedia;
-        if (nagivator.getUserMedia) {
-            navigator.getUserMedia({video: true},
-                stream => {
-                    webcamElement.srcObject = strem;
-                    webcamElement.addEventListener('loadeddata', () => resolve(), false);
-            },
-            error => reject());
-        } else {
-            reject();
-        }
-    });
+  return new Promise((resolve, reject) => {
+    const navigatorAny = navigator;
+    navigator.getUserMedia = navigator.getUserMedia ||
+        navigatorAny.webkitGetUserMedia || navigatorAny.mozGetUserMedia ||
+        navigatorAny.msGetUserMedia;
+    if (navigator.getUserMedia) {
+      navigator.getUserMedia({video: true},
+        stream => {
+          webcamElement.srcObject = stream;
+          webcamElement.addEventListener('loadeddata',  () => resolve(), false);
+        },
+        error => reject());
+    } else {
+      reject();
+    }
+  });
 }
 
 app();
