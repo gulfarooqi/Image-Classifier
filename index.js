@@ -10,7 +10,7 @@ async function app() {
     console.log('Sucessfully loaded model');
 
     await setupWebcam();
-    while(true) {
+    while (true) {
         const result = await net.classify(webcamElement);
         
         document.getElementById('console').innerText = '
